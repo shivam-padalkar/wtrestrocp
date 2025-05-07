@@ -1,54 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Menu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Menu</title>
+  <link rel="stylesheet" href="/css/style.css">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .menu-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
-    .veg { color: green; }
-    .nonveg { color: red; }
-    .cart-link { 
-      display: block; margin-top: 20px; padding: 10px; 
-      background: #4CAF50; color: white; text-align: center;
-      text-decoration: none; border-radius: 5px; 
+    .login-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .login-button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .login-button:hover {
+      background-color: #45a049;
+    }
+    
+    .admin-button {
+      background-color: #2196F3;
+    }
+    
+    .admin-button:hover {
+      background-color: #0b7dda;
+    }
+    
+    .veg-button {
+      background-color: #4CAF50;
+    }
+    
+    .nonveg-button {
+      background-color: #f44336;
+    }
+    
+    .nonveg-button:hover {
+      background-color: #d32f2f;
     }
   </style>
 </head>
 <body>
-  <h1>Hotel Menu</h1>
+  <header>
+    <h1>Restaurant Menu</h1>
+  </header>
+
+  <!-- Login buttons section -->
+  <div class="login-container">
+    <a href="/chef-login/veg" class="login-button veg-button">Veg Chef Login</a>
+    <a href="/chef-login/nonveg" class="login-button nonveg-button">Non-Veg Chef Login</a>
+    <a href="/admin-login" class="login-button admin-button">Admin Login</a>
+  </div>
+
+  <main class="menu-container">
+    <% items.forEach(item => { %>
+      <div class="menu-item">
+        <h2><%= item.name %></h2>
+        <p class="item-type"><%= item.type.charAt(0).toUpperCase() + item.type.slice(1) %></p>
+        <p class="item-price">₹<%= item.price.toFixed(2) %></p>
+        <p class="prep-time">Prep time: <%= item.prepTime %> minutes</p>
+        
+        <form action="/add-to-cart" method="POST">
+          <input type="hidden" name="id" value="<%= item._id %>">
+          <input type="hidden" name="name" value="<%= item.name %>">
+          <input type="hidden" name="type" value="<%= item.type %>">
+          <input type="hidden" name="price" value="<%= item.price %>">
+          <input type="hidden" name="prepTime" value="<%= item.prepTime %>">
+          <button type="submit" class="add-to-cart">Add to Cart</button>
+        </form>
+      </div>
+    <% }) %>
+  </main>
   
-  <h2 class="veg">Vegetarian Items</h2>
-  <% items.filter(item => item.type === 'veg').forEach(item => { %>
-    <div class="menu-item">
-      <strong><%= item.name %></strong> - ₹<%= item.price %> <span class="veg">(Veg)</span>
-      <p>Preparation Time: <%= item.prepTime %> mins</p>
-      <form action="/add-to-cart" method="POST">
-        <input type="hidden" name="id" value="<%= item._id %>">
-        <input type="hidden" name="name" value="<%= item.name %>">
-        <input type="hidden" name="type" value="<%= item.type %>">
-        <input type="hidden" name="price" value="<%= item.price %>">
-        <input type="hidden" name="prepTime" value="<%= item.prepTime %>">
-        <button type="submit">Add to Cart</button>
-      </form>
-    </div>
-  <% }) %>
-  
-  <h2 class="nonveg">Non-Vegetarian Items</h2>
-  <% items.filter(item => item.type === 'nonveg').forEach(item => { %>
-    <div class="menu-item">
-      <strong><%= item.name %></strong> - ₹<%= item.price %> <span class="nonveg">(Non-Veg)</span>
-      <p>Preparation Time: <%= item.prepTime %> mins</p>
-      <form action="/add-to-cart" method="POST">
-        <input type="hidden" name="id" value="<%= item._id %>">
-        <input type="hidden" name="name" value="<%= item.name %>">
-        <input type="hidden" name="type" value="<%= item.type %>">
-        <input type="hidden" name="price" value="<%= item.price %>">
-        <input type="hidden" name="prepTime" value="<%= item.prepTime %>">
-        <button type="submit">Add to Cart</button>
-      </form>
-    </div>
-  <% }) %>
-  
-  <a href="/cart" class="cart-link">View Cart</a>
+  <div class="cart-link">
+    <a href="/cart" class="view-cart">View Cart</a>
+  </div>
 </body>
 </html>

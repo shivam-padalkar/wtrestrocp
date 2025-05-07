@@ -79,6 +79,7 @@ app.get('/cart', (req, res) => {
 // Order placement (simplified version without schema changes)
 // Order placement (simplified version without schema changes)
 // Order placement
+// Order placement - simplified and robust version
 app.post('/place-order', async (req, res) => {
   try {
     const { tableNumber, email } = req.body;
@@ -112,17 +113,16 @@ app.post('/place-order', async (req, res) => {
       chefType = 'nonveg';
     }
 
-    // Create a new order
-    const orderData = {
+    // Create new order document
+    const newOrder = new Order({
       items: processedItems,
       tableNumber: parseInt(tableNumber),
       email,
       chefType,
-      status: 'Pending',
       billSent: false
-    };
-
-    const newOrder = await Order.create(orderData);
+    });
+    
+    await newOrder.save();
 
     // Send confirmation email
     try {
@@ -147,7 +147,7 @@ app.post('/place-order', async (req, res) => {
 
     // Clear the cart
     req.session.cart = [];
-    res.render('order-confirmation', { order: newOrder, showLoginButtons: false });
+    res.render('order-confirmation', { order: newOrder });
   } catch (error) {
     console.error('Error placing order:', error);
     res.status(500).render('error', {
@@ -390,20 +390,22 @@ app.get('/admin/orders', async (req, res) => {
 
 // Bill sending - UPDATED to only include orders that haven't been billed yet
 // Bill sending - UPDATED to only include orders that haven't been billed yet
+// Bill sending - UPDATED to only include orders that haven't been billed yet
 app.post('/send-bill', async (req, res) => {
   try {
     const { tableNumber, customerName, email } = req.body;
     
-    // Find completed orders for this table that haven't been billed yet
+    // Find completed orders for this table and email that haven't been billed yet
     const orders = await Order.find({ 
       tableNumber: parseInt(tableNumber), 
       status: 'Completed',
-      email: email // Match the email to ensure we're only getting orders for the right customer
+      email: email,
+      billSent: { $ne: true } // Only get orders that haven't been billed
     });
     
     if (!orders || orders.length === 0) {
       return res.render('error', {
-        message: 'No completed orders found for this table and email.',
+        message: 'No unbilled completed orders found for this table and email.',
         backLink: '/admin',
         backText: 'Back to Admin Dashboard'
       });
@@ -412,31 +414,15 @@ app.post('/send-bill', async (req, res) => {
     // Calculate total bill amount
     let totalAmount = 0;
     let itemList = [];
-    let billableOrders = [];
     
-    // Process each order
     orders.forEach(order => {
-      // Check if order has items array and it's not empty
-      if (order.items && Array.isArray(order.items) && order.items.length > 0) {
-        // Only include orders that haven't been billed yet
-        if (order.billSent !== true) {
-          billableOrders.push(order);
-          order.items.forEach(item => {
-            totalAmount += parseFloat(item.price || 0);
-            itemList.push(`${item.name || 'Unknown Item'} - ₹${(item.price || 0).toFixed(2)}`);
-          });
-        }
+      if (order.items && Array.isArray(order.items)) {
+        order.items.forEach(item => {
+          totalAmount += parseFloat(item.price || 0);
+          itemList.push(`${item.name || 'Unknown Item'} - ₹${(item.price || 0).toFixed(2)}`);
+        });
       }
     });
-    
-    // If no billable orders found
-    if (billableOrders.length === 0) {
-      return res.render('error', {
-        message: 'All completed orders for this table and email have already been billed.',
-        backLink: '/admin',
-        backText: 'Back to Admin Dashboard'
-      });
-    }
     
     // Create bill HTML
     const billHtml = `
@@ -465,9 +451,7 @@ app.post('/send-bill', async (req, res) => {
             <th>Price</th>
           </tr>
           ${itemList.map(item => {
-            const parts = item.split(' - ');
-            const name = parts[0] || 'Unknown Item';
-            const price = parts[1] || '₹0.00';
+            const [name, price] = item.split(' - ');
             return `<tr><td>${name}</td><td>${price}</td></tr>`;
           }).join('')}
         </table>
@@ -499,7 +483,7 @@ app.post('/send-bill', async (req, res) => {
       });
       
       // Mark orders as billed
-      for (const order of billableOrders) {
+      for (const order of orders) {
         await Order.findByIdAndUpdate(order._id, { billSent: true });
       }
       
@@ -507,8 +491,7 @@ app.post('/send-bill', async (req, res) => {
         customerName, 
         email, 
         tableNumber, 
-        totalAmount,
-        showLoginButtons: false
+        totalAmount
       });
     } catch (emailError) {
       console.error('Error sending email:', emailError);
