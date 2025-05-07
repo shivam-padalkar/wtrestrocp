@@ -3,86 +3,547 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restaurant Menu</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>Sahana Restaurant - Menu</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
   <style>
-    .login-container {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      gap: 10px;
+    :root {
+      --primary: #e8505b;
+      --secondary: #f9a03f;
+      --success: #2ecc71;
+      --veg: #66bb6a;
+      --nonveg: #e53935;
+      --admin: #3498db;
+      --dark: #222831;
+      --light: #f9f9f9;
+      --gray: #eeeeee;
     }
     
-    .login-button {
-      padding: 10px 15px;
-      background-color: #4CAF50;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f5f5;
+      background-image: url('https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+    
+    .page-wrapper {
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Header styling */
+    .menu-header {
+      padding: 30px 0;
+      position: relative;
+    }
+    
+    .brand-container {
+      position: relative;
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .brand-name::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+    
+    .brand-tagline {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+    
+    .home-link-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 25px;
+      background-color: var(--primary);
       color: white;
       text-decoration: none;
-      border-radius: 4px;
-      font-weight: bold;
-      transition: background-color 0.3s;
+      border-radius: 30px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(232, 80, 91, 0.3);
     }
     
-    .login-button:hover {
-      background-color: #45a049;
+    .home-link:hover {
+      background-color: #d63b46;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232, 80, 91, 0.4);
+      color: white;
     }
     
-    .admin-button {
-      background-color: #2196F3;
+    .home-link i {
+      margin-right: 8px;
     }
     
-    .admin-button:hover {
-      background-color: #0b7dda;
+    /* Menu container styling */
+    .menu-section {
+      padding: 40px 0 80px;
     }
     
-    .veg-button {
-      background-color: #4CAF50;
+    .menu-section-header {
+      text-align: center;
+      margin-bottom: 40px;
     }
     
-    .nonveg-button {
-      background-color: #f44336;
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: white;
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
     }
     
-    .nonveg-button:hover {
-      background-color: #d32f2f;
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+    
+    .menu-description {
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+    }
+    
+    /* Filter buttons */
+    .menu-filter {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 15px;
+    }
+    
+    .filter-btn {
+      padding: 8px 25px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background-color: transparent;
+      color: white;
+      border-radius: 30px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--primary);
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .filter-btn.veg-filter:hover, .filter-btn.veg-filter.active {
+      border-color: var(--veg);
+      background-color: var(--veg);
+    }
+    
+    .filter-btn.nonveg-filter:hover, .filter-btn.nonveg-filter.active {
+      border-color: var(--nonveg);
+      background-color: var(--nonveg);
+    }
+    
+    /* Menu items grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .menu-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+    
+    .menu-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .veg-item::before {
+      background-color: var(--veg);
+    }
+    
+    .nonveg-item::before {
+      background-color: var(--nonveg);
+    }
+    
+    .menu-card-content {
+      padding: 25px;
+    }
+    
+    .menu-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .menu-item-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    
+    .menu-item-price {
+      background-color: var(--primary);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    .menu-item-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+    }
+    
+    .veg-type {
+      background-color: rgba(102, 187, 106, 0.15);
+      color: var(--veg);
+    }
+    
+    .nonveg-type {
+      background-color: rgba(229, 57, 53, 0.15);
+      color: var(--nonveg);
+    }
+    
+    .menu-item-detail {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .menu-item-divider {
+      width: 100%;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+    }
+    
+    .add-to-cart-form {
+      margin-top: 20px;
+    }
+    
+    .add-to-cart-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--secondary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .add-to-cart-btn:hover {
+      background-color: #e58e20;
+      transform: translateY(-3px);
+    }
+    
+    /* Cart button sticky */
+    .cart-sticky {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 100;
+    }
+    
+    .cart-btn {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      box-shadow: 0 6px 20px rgba(232, 80, 91, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .cart-btn:hover {
+      background-color: #d63b46;
+      transform: scale(1.1);
+      color: white;
+    }
+    
+    .cart-icon {
+      font-size: 1.5rem;
+      margin-bottom: 3px;
+    }
+    
+    .cart-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Animation classes */
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 0.5s ease-in-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+      .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      
+      .brand-name {
+        font-size: 2.5rem;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 767px) {
+      .menu-filter {
+        flex-wrap: wrap;
+      }
+      
+      .menu-grid {
+        grid-template-columns: 1fr;
+        max-width: 450px;
+        margin: 0 auto;
+      }
+      
+      .menu-header {
+        padding: 20px 0;
+      }
+      
+      .brand-name {
+        font-size: 2rem;
+      }
+      
+      .brand-tagline {
+        font-size: 1rem;
+      }
+      
+      .section-title {
+        font-size: 1.8rem;
+      }
+      
+      .menu-description {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Restaurant Menu</h1>
-  </header>
-
-  <!-- Login buttons section -->
-  <div class="login-container">
-    <a href="/chef-login/veg" class="login-button veg-button">Veg Chef Login</a>
-    <a href="/chef-login/nonveg" class="login-button nonveg-button">Non-Veg Chef Login</a>
-    <a href="/admin-login" class="login-button admin-button">Admin Login</a>
-  </div>
-
-  <main class="menu-container">
-    <% items.forEach(item => { %>
-      <div class="menu-item">
-        <h2><%= item.name %></h2>
-        <p class="item-type"><%= item.type.charAt(0).toUpperCase() + item.type.slice(1) %></p>
-        <p class="item-price">₹<%= item.price.toFixed(2) %></p>
-        <p class="prep-time">Prep time: <%= item.prepTime %> minutes</p>
-        
-        <form action="/add-to-cart" method="POST">
-          <input type="hidden" name="id" value="<%= item._id %>">
-          <input type="hidden" name="name" value="<%= item.name %>">
-          <input type="hidden" name="type" value="<%= item.type %>">
-          <input type="hidden" name="price" value="<%= item.price %>">
-          <input type="hidden" name="prepTime" value="<%= item.prepTime %>">
-          <button type="submit" class="add-to-cart">Add to Cart</button>
-        </form>
+  <div class="page-wrapper">
+    <header class="menu-header">
+      <div class="container">
+        <div class="brand-container" data-aos="fade-down">
+          <h1 class="brand-name">Sahana Restaurant</h1>
+          <p class="brand-tagline">Experience Culinary Excellence</p>
+          <div class="home-link-container">
+            <a href="/" class="home-link">
+              <i class="fas fa-chevron-left"></i> Back to Home
+            </a>
+          </div>
+        </div>
       </div>
-    <% }) %>
-  </main>
-  
-  <div class="cart-link">
-    <a href="/cart" class="view-cart">View Cart</a>
+    </header>
+
+    <section class="menu-section">
+      <div class="container">
+        <div class="menu-section-header" data-aos="fade-up">
+          <h2 class="section-title">Our Delicious Menu</h2>
+          <p class="menu-description">Explore our carefully crafted selection of dishes prepared with the finest ingredients and authentic flavors.</p>
+        </div>
+        
+        <div class="menu-filter" data-aos="fade-up" data-aos-delay="100">
+          <button class="filter-btn all-filter active" data-filter="all">All Items</button>
+          <button class="filter-btn veg-filter" data-filter="veg">Vegetarian</button>
+          <button class="filter-btn nonveg-filter" data-filter="nonveg">Non-Vegetarian</button>
+        </div>
+        
+        <div class="menu-grid" data-aos="fade-up" data-aos-delay="200">
+          <% items.forEach((item, index) => { %>
+            <div class="menu-card <%= item.type %>-item menu-item fade-in" data-category="<%= item.type %>" style="animation-delay: <%= 0.1 * index %>s">
+              <div class="menu-card-content">
+                <div class="menu-item-header">
+                  <div>
+                    <h3 class="menu-item-title"><%= item.name %></h3>
+                    <span class="menu-item-type <%= item.type %>-type">
+                      <% if (item.type === 'veg') { %>
+                        <i class="fas fa-leaf"></i>
+                      <% } else { %>
+                        <i class="fas fa-drumstick-bite"></i>
+                      <% } %>
+                      <%= item.type.charAt(0).toUpperCase() + item.type.slice(1) %>
+                    </span>
+                  </div>
+                  <span class="menu-item-price">₹<%= item.price.toFixed(2) %></span>
+                </div>
+                
+                <div class="menu-item-detail">
+                  <i class="far fa-clock"></i>
+                  <span>Preparation Time: <%= item.prepTime %> minutes</span>
+                </div>
+                
+                <div class="menu-item-divider"></div>
+                
+                <form action="/add-to-cart" method="POST" class="add-to-cart-form">
+                  <input type="hidden" name="id" value="<%= item._id %>">
+                  <input type="hidden" name="name" value="<%= item.name %>">
+                  <input type="hidden" name="type" value="<%= item.type %>">
+                  <input type="hidden" name="price" value="<%= item.price %>">
+                  <input type="hidden" name="prepTime" value="<%= item.prepTime %>">
+                  <button type="submit" class="add-to-cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    Add to Cart
+                  </button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+    
+    <div class="cart-sticky" data-aos="fade-up" data-aos-offset="0" data-aos-delay="400">
+      <a href="/cart" class="cart-btn">
+        <i class="fas fa-shopping-cart cart-icon"></i>
+        <span class="cart-text">Cart</span>
+      </a>
+    </div>
   </div>
+
+  <!-- Bootstrap & jQuery Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+  <!-- AOS Animations Script -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Initialize AOS
+      AOS.init({
+        duration: 1000,
+        once: true,
+      });
+      
+      // Menu filtering
+      $('.filter-btn').on('click', function() {
+        const filter = $(this).data('filter');
+        
+        // Update active button
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        // Filter items
+        if (filter === 'all') {
+          $('.menu-item').show();
+        } else {
+          $('.menu-item').hide();
+          $('.menu-item[data-category="' + filter + '"]').show();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

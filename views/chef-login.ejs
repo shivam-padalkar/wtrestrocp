@@ -1,12 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head><title><%= type %> Chef Login</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .home-link {
+      display: inline-block;
+      margin: 20px;
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .home-link:hover {
+      background-color: #388E3C;
+    }
+  </style>
+</head>
 <body>
-  <h1><%= type %> Chef Login</h1>
-  <form action="/chef/<%= type %>" method="POST">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-  </form>
+  <header>
+    <h1><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login</h1>
+    <a href="/" class="home-link">Back to Home</a>
+  </header>
+  
+  <div class="login-container">
+    <form action="/chef/<%= type %>" method="POST" class="login-form">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+  </div>
 </body>
 </html>

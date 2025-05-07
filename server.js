@@ -31,14 +31,16 @@ app.use(session({
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
 
-// Menu page
-app.get('/', async (req, res) => {
+// Home page route - Add this to your server.js
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+// Update the menu route to be at /menu instead of /
+app.get('/menu', async (req, res) => {
   try {
     const items = await Item.find({});
-    res.render('menu', { 
-      items, 
-      showLoginButtons: true // Adding flag to show login buttons on home screen
-    });
+    res.render('menu', { items });
   } catch (error) {
     console.error('Error fetching menu items:', error);
     res.status(500).render('error', { 
@@ -391,6 +393,7 @@ app.get('/admin/orders', async (req, res) => {
 // Bill sending - UPDATED to only include orders that haven't been billed yet
 // Bill sending - UPDATED to only include orders that haven't been billed yet
 // Bill sending - UPDATED to only include orders that haven't been billed yet
+// Bill sending - UPDATED to only include orders that haven't been billed yet
 app.post('/send-bill', async (req, res) => {
   try {
     const { tableNumber, customerName, email } = req.body;
@@ -451,7 +454,9 @@ app.post('/send-bill', async (req, res) => {
             <th>Price</th>
           </tr>
           ${itemList.map(item => {
-            const [name, price] = item.split(' - ');
+            const parts = item.split(' - ');
+            const name = parts[0] || 'Unknown Item';
+            const price = parts[1] || '₹0.00';
             return `<tr><td>${name}</td><td>${price}</td></tr>`;
           }).join('')}
         </table>
