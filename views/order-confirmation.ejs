@@ -1,38 +1,612 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Order Confirmation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation - Sahana Restaurant</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .success { color: #4CAF50; }
-    .order-details { border: 1px solid #ddd; padding: 15px; margin: 20px 0; border-radius: 5px; }
-    .menu-link { 
-      display: inline-block; margin: 20px 0; padding: 10px; 
-      background: #2196F3; color: white; text-decoration: none; border-radius: 5px; 
+    :root {
+      --primary: #7D4C2A;
+      --secondary: #D4AF37;
+      --success: #50A162;
+      --light: #FAF3E0;
+      --dark: #2C1E10;
+      --white: #FFFFFF;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      position: relative;
+      min-height: 100vh;
+    }
+    
+    /* Elegant page background with pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        url('https://images.unsplash.com/photo-1544148103-0773bf10d330?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'),
+        linear-gradient(rgba(250, 243, 224, 0.96), rgba(250, 243, 224, 0.96));
+      background-blend-mode: overlay;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      z-index: -1;
+      opacity: 0.25;
+    }
+
+    /* Restaurant Header Section */
+    .header {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                 url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      color: var(--white);
+      padding: 3.5rem 0;
+      position: relative;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      border-bottom-left-radius: 30% 3%;
+      border-bottom-right-radius: 30% 3%;
+      overflow: hidden;
+    }
+    
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .tagline {
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+    
+    /* Confirmation Content */
+    .confirmation-container {
+      max-width: 900px;
+      margin: 0 auto 4rem;
+      padding: 0 1rem;
+    }
+    
+    .success-message {
+      background: linear-gradient(45deg, #50A162, #6ABE76);
+      border-radius: 12px;
+      color: white;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      box-shadow: 0 15px 30px rgba(80, 161, 98, 0.15);
+      overflow: hidden;
+      transform: translateY(-20px);
+    }
+    
+    .success-icon {
+      position: absolute;
+      right: -30px;
+      top: -30px;
+      font-size: 12rem;
+      color: rgba(255, 255, 255, 0.2);
+      transform: rotate(-15deg);
+    }
+    
+    .success-message h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      position: relative;
+    }
+    
+    .order-confirmation-card {
+      background-color: var(--white);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2.5rem;
+    }
+
+    .card-header {
+      background: linear-gradient(to right, var(--primary), #8D5C3A);
+      color: white;
+      padding: 1.5rem;
+      position: relative;
+    }
+    
+    .card-header h3 {
+      font-family: 'Playfair Display', serif;
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+    
+    .order-info {
+      padding: 2rem;
+      position: relative;
+    }
+    
+    .order-info::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      align-items: center;
+    }
+    
+    .info-label {
+      color: #777;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .info-value {
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+    
+    .order-id {
+      background-color: var(--light);
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      letter-spacing: 1px;
+      font-size: 0.95rem;
+      color: var(--primary);
+      border: 1px dashed var(--secondary);
+    }
+    
+    /* Order items section */
+    .items-section {
+      padding: 2rem;
+    }
+    
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--secondary);
+      border-radius: 2px;
+    }
+    
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .items-table th {
+      color: #777;
+      font-weight: 500;
+      padding: 0.8rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    
+    .items-table td {
+      padding: 1rem 0.8rem;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    
+    .items-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .item-name {
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    .item-price {
+      font-weight: 600;
+      color: var(--primary);
+      text-align: right;
+    }
+    
+    /* Total row */
+    .total-row {
+      background-color: var(--light);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+    
+    .total-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .total-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    /* Next steps card */
+    .next-steps-card {
+      background-color: var(--white);
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+    
+    .next-steps-card p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .next-steps-card::before {
+      content: "\f0e0";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      font-size: 12rem;
+      color: rgba(0, 0, 0, 0.03);
+      z-index: 0;
+    }
+    
+    /* Return to menu button */
+    .menu-link {
+      display: inline-block;
+      background: linear-gradient(to right, var(--primary), #8D5C3A);
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(125, 76, 42, 0.2);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .menu-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 25px rgba(125, 76, 42, 0.3);
+      color: white;
+    }
+    
+    .menu-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+      z-index: -1;
+    }
+    
+    .menu-link:hover::before {
+      left: 100%;
+    }
+    
+    .menu-link i {
+      margin-right: 10px;
+    }
+    
+    /* Decorative elements */
+    .decoration {
+      position: absolute;
+      z-index: -1;
+      opacity: 0.7;
+    }
+    
+    .decoration-1 {
+      top: 20%;
+      left: 5%;
+      font-size: 3rem;
+      color: var(--secondary);
+      transform: rotate(-15deg);
+    }
+    
+    .decoration-2 {
+      bottom: 15%;
+      right: 5%;
+      font-size: 3rem;
+      color: var(--primary);
+      transform: rotate(20deg);
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: var(--dark);
+      padding: 1rem 0;
+      color: var(--light);
+      text-align: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    
+    .footer p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    /* Receipt pattern styling */
+    .receipt-edge {
+      height: 12px;
+      background-image: linear-gradient(45deg, var(--white) 25%, transparent 25%), 
+                        linear-gradient(-45deg, var(--white) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, var(--white) 75%),
+                        linear-gradient(-45deg, transparent 75%, var(--white) 75%);
+      background-size: 12px 12px;
+      background-color: rgba(0,0,0,0.05);
+      margin-top: -1px;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .logo-text {
+        font-size: 2.2rem;
+      }
+      
+      .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .info-value {
+        margin-top: 0.3rem;
+      }
+      
+      .total-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .total-amount {
+        margin-top: 0.5rem;
+      }
+      
+      .decoration {
+        display: none;
+      }
+    }
+    
+    /* Animation Classes */
+    .fade-in-bottom {
+      animation: fadeInBottom 1s both;
+    }
+    
+    .fade-in-right {
+      animation: fadeInRight 1s both;
+    }
+    
+    .fade-in-left {
+      animation: fadeInLeft 1s both;
+    }
+    
+    @keyframes fadeInBottom {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
 <body>
-  <h1 class="success">Order Placed Successfully!</h1>
-  
-  <div class="order-details">
-    <h2>Order Details</h2>
-    <p><strong>Order ID:</strong> <%= order._id %></p>
-    <p><strong>Table Number:</strong> <%= order.tableNumber %></p>
-    <p><strong>Email:</strong> <%= order.email %></p>
-    
-    <h3>Items Ordered:</h3>
-    <ul>
-      <% order.items.forEach(item => { %>
-        <li><%= item.name %> - ₹<%= item.price %></li>
-      <% }) %>
-    </ul>
-    
-    <p><strong>Total:</strong> ₹<%= order.items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) %></p>
+  <!-- Decorative elements -->
+  <div class="decoration decoration-1">
+    <i class="fas fa-leaf"></i>
   </div>
+  <div class="decoration decoration-2">
+    <i class="fas fa-utensils"></i>
+  </div>
+
+  <!-- Restaurant Header -->
+  <header class="header">
+    <div class="container text-center">
+      <h1 class="logo-text animate__animated animate__fadeInDown">Sahana Restaurant</h1>
+      <p class="tagline animate__animated animate__fadeIn animate__delay-1s">Exquisite Culinary Experience</p>
+    </div>
+  </header>
   
-  <p>Your order has been sent to the kitchen. You'll receive your bill by email once your order is complete.</p>
+  <div class="confirmation-container">
+    <!-- Success Message -->
+    <div class="success-message animate__animated animate__fadeInDown">
+      <i class="fas fa-check-circle success-icon"></i>
+      <h2><i class="fas fa-check-circle me-3"></i>Order Placed Successfully!</h2>
+      <p>Thank you for dining with us at Sahana Restaurant. Your order has been received and sent to our kitchen.</p>
+    </div>
+    
+    <!-- Order Information Card -->
+    <div class="order-confirmation-card fade-in-bottom">
+      <div class="card-header">
+        <h3><i class="fas fa-receipt me-2"></i>Order Details</h3>
+      </div>
+      
+      <div class="order-info">
+        <div class="info-row">
+          <span class="info-label">Order ID:</span>
+          <span class="info-value order-id"><%= order._id %></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Table Number:</span>
+          <span class="info-value"><i class="fas fa-chair me-2"></i><%= order.tableNumber %></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value"><i class="fas fa-envelope me-2"></i><%= order.email %></span>
+        </div>
+      </div>
+      
+      <div class="receipt-edge"></div>
+      
+      <div class="items-section">
+        <h4 class="section-title">Items Ordered</h4>
+        
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Item</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% order.items.forEach((item, index) => { %>
+              <tr class="fade-in-right" style="animation-delay: <%= 0.3 + (index * 0.1) %>s">
+                <td><%= index + 1 %></td>
+                <td class="item-name"><%= item.name %></td>
+                <td class="item-price">₹<%= parseFloat(item.price).toFixed(2) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="total-row fade-in-bottom" style="animation-delay: <%= 0.3 + (order.items.length * 0.1) %>s">
+        <span class="total-label">Total Amount</span>
+        <span class="total-amount">₹<%= order.items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) %></span>
+      </div>
+    </div>
+    
+    <!-- Next Steps Card -->
+    <div class="next-steps-card fade-in-bottom" style="animation-delay: 0.6s">
+      <p><i class="fas fa-info-circle me-2 text-primary"></i> Your order has been sent to our kitchen. Our chefs are preparing your delicious meal right now!</p>
+      <p><i class="fas fa-envelope me-2 text-primary"></i> A bill will be sent to your email once your order is complete.</p>
+    </div>
+    
+    <!-- Return to Menu Button -->
+    <div class="text-center fade-in-bottom" style="animation-delay: 0.7s">
+      <a href="/" class="menu-link">
+        <i class="fas fa-utensils"></i> Return to Menu
+      </a>
+    </div>
+  </div>
+  <br> <br>
   
-  <a href="/" class="menu-link">Return to Menu</a>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© <%= new Date().getFullYear() %> Sahana Restaurant. All rights reserved.</p>
+  </footer>
+  
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS for animations -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add subtle animation to elements with custom animation classes
+      const animateElements = document.querySelectorAll('.fade-in-bottom, .fade-in-right, .fade-in-left');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translate(0, 0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+      
+      animateElements.forEach((element) => {
+        element.style.opacity = '0';
+        observer.observe(element);
+      });
+      
+      // Add confetti effect
+      setTimeout(() => {
+        const successIcon = document.querySelector('.success-icon');
+        if (successIcon) {
+          successIcon.style.transform = 'rotate(0deg)';
+          successIcon.style.transition = 'transform 1s ease';
+        }
+      }, 500);
+    });
+  </script>
 </body>
 </html>

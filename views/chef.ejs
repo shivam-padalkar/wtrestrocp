@@ -1,80 +1,896 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title><%= type %> Chef Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Dashboard - Sahana Restaurant</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
-    .order-card { 
-      border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; 
-      border-radius: 5px; background-color: #f9f9f9; 
+    :root {
+      --primary: #7D4C2A;
+      --primary-dark: #5D381F;
+      --secondary: #D4AF37;
+      --secondary-light: #EAD696;
+      --success: #50A162;
+      --danger: #E65D4F;
+      --light: #FAF3E0;
+      --dark: #2C1E10;
+      --white: #FFFFFF;
+      --gray-100: #f8f9fa;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --veg: #50A162;
+      --nonveg: #E65D4F;
     }
-    .complete-btn {
-      background: #4CAF50; color: white; padding: 10px;
-      border: none; border-radius: 5px; cursor: pointer;
-      margin-top: 15px;
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .veg { color: green; }
-    .nonveg { color: red; }
-    .logout-link {
-      display: inline-block; padding: 10px 15px;
-      background: #f44336; color: white;
-      text-decoration: none; border-radius: 5px;
-      margin-top: 20px;
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+      color: var(--dark);
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 80px;
     }
-    .no-orders { 
-      padding: 30px; background-color: #e9e9e9; 
-      text-align: center; border-radius: 5px;
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
     }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Top header with restaurant image */
+    .dashboard-header {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                 url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 2.5rem 0;
+      margin-bottom: 2rem;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .dashboard-header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+    }
+    
+    .restaurant-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      background: linear-gradient(45deg, var(--white) 30%, var(--secondary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .chef-title {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--secondary-light);
+      margin-bottom: 0;
+      position: relative;
+      display: inline-block;
+      padding: 0 15px;
+    }
+    
+    .chef-title::before,
+    .chef-title::after {
+      content: '•';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary);
+    }
+    
+    .chef-title::before {
+      left: 0;
+    }
+    
+    .chef-title::after {
+      right: 0;
+    }
+    
+    .chef-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: <%= type === 'veg' ? 'var(--veg)' : 'var(--nonveg)' %>;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 <%= type === 'veg' ? 'rgba(80, 161, 98, 0.7)' : 'rgba(230, 93, 79, 0.7)' %>;
+      }
+      70% {
+        box-shadow: 0 0 0 10px <%= type === 'veg' ? 'rgba(80, 161, 98, 0)' : 'rgba(230, 93, 79, 0)' %>;
+      }
+      100% {
+        box-shadow: 0 0 0 0 <%= type === 'veg' ? 'rgba(80, 161, 98, 0)' : 'rgba(230, 93, 79, 0)' %>;
+      }
+    }
+    
+    /* Live Kitchen Status Bar */
+    .kitchen-status {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(to right, var(--dark), var(--primary-dark));
+      color: white;
+      padding: 12px 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .kitchen-status .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #f44336;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .status-time {
+      font-size: 0.9rem;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+    
+    .auto-refresh {
+      font-size: 0.85rem;
+      animation: countdown 30s linear infinite;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    @keyframes countdown {
+      0% { opacity: 0.5; }
+      90% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    /* Main content */
+    .dashboard-content {
+      margin-bottom: 3rem;
+    }
+    
+    /* Orders section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+    }
+    
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin: 0;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 10px;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: var(--secondary);
+      border-radius: 3px;
+    }
+    
+    .orders-count {
+      background: var(--light);
+      border: 1px solid var(--gray-300);
+      color: var(--primary);
+      font-weight: 600;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    /* Order cards */
+    .order-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+      border-top: 5px solid <%= type === 'veg' ? 'var(--veg)' : 'var(--nonveg)' %>;
+    }
+    
+    .order-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 1.5rem;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .table-number {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+    
+    .table-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 35px;
+      height: 35px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.9rem;
+    }
+    
     .order-time {
-      color: #666;
-      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #777;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .items-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem 0;
+    }
+    
+    .item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--gray-200);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .item:last-child {
+      border-bottom: none;
+    }
+    
+    .item:hover {
+      background-color: rgba(250, 243, 224, 0.3);
+      border-radius: 8px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    
+    .item-type-indicator {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-top: 5px;
+      border-radius: 50%;
+      margin-right: 12px;
+      background-color: <%= type === 'veg' ? 'var(--veg)' : 'var(--nonveg)' %>;
+      position: relative;
+    }
+    
+    .item-type-indicator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: white;
+    }
+    
+    .item-details {
+      flex-grow: 1;
+    }
+    
+    .item-name {
+      font-weight: 500;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    .item-prep-time {
+      color: #777;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    
+    /* Action buttons */
+    .order-actions {
+      padding: 1rem 1.5rem;
+      background: var(--gray-100);
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .complete-btn {
+      width: 100%;
+      background: linear-gradient(to right, var(--success), #6ABE76);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(80, 161, 98, 0.2);
+    }
+    
+    .complete-btn:hover {
+      background: linear-gradient(to right, #469556, #5CAD6A);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(80, 161, 98, 0.3);
+    }
+    
+    .complete-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(80, 161, 98, 0.2);
+    }
+    
+    /* Empty state */
+    .no-orders {
+      background: white;
+      border-radius: 15px;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      margin-bottom: 2rem;
+    }
+    
+    .empty-icon {
+      font-size: 4.5rem;
+      color: var(--gray-300);
+      margin-bottom: 1.5rem;
+      display: inline-block;
+    }
+    
+    .no-orders h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .no-orders p {
+      color: #777;
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto 1.5rem;
+    }
+    
+    /* Footer actions */
+    .dashboard-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 15px 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+    
+    .dashboard-footer .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logout-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--danger);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(230, 93, 79, 0.2);
+    }
+    
+    .logout-link:hover {
+      background: #d6483a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(230, 93, 79, 0.25);
+      color: white;
+    }
+    
+    .chef-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: <%= type === 'veg' ? 'var(--veg)' : 'var(--nonveg)' %>;
+      color: white;
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .copyright {
+      color: #777;
+      font-size: 0.85rem;
+    }
+    
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .toast {
+      background: white;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 300px;
+      animation: slideIn 0.3s ease forwards;
+      border-left: 4px solid var(--success);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--success);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .toast-content {
+      flex-grow: 1;
+    }
+    
+    .toast-title {
+      font-weight: 600;
+      margin: 0 0 3px 0;
+      color: var(--dark);
+    }
+    
+    .toast-message {
+      font-size: 0.85rem;
+      color: #777;
+      margin: 0;
+    }
+    
+    .toast-close {
+      color: #aaa;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    
+    /* Progress bar for auto-refresh */
+    .refresh-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--secondary);
+      width: 100%;
+      transform-origin: left;
+      transform: scaleX(0);
+      animation: progress 30s linear infinite;
+    }
+    
+    @keyframes progress {
+      0% { transform: scaleX(0); }
+      100% { transform: scaleX(1); }
+    }
+    
+    /* Card hover effect */
+    .hover-card-effect::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.15), rgba(255,255,255,0) 70%);
+      transform: translateX(-100%);
+      animation: shine 3s infinite ease-in-out;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      20%, 100% { transform: translateX(100%); }
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 992px) {
+      .order-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 2rem 0;
+      }
+      
+      .restaurant-logo {
+        font-size: 2.2rem;
+      }
+      
+      .chef-title {
+        font-size: 1.2rem;
+      }
+      
+      .chef-badge {
+        top: 10px;
+        right: 10px;
+        padding: 5px 15px;
+        font-size: 0.8rem;
+      }
+      
+      .kitchen-status .container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .orders-count {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Dashboard</h1>
-  
-  <% if (orders && orders.length > 0) { %>
-    <h2>Pending Orders</h2>
-    
-    <% orders.forEach(order => { %>
-      <div class="order-card">
-        <h3>Order for Table <%= order.tableNumber %></h3>
-        <p class="order-time">Received: <%= new Date(order.createdAt).toLocaleString() %></p>
-        
-        <% if (type === 'veg') { %>
-          <h4>Vegetarian Items:</h4>
-          <% order.items.filter(item => item.type === 'veg').forEach(item => { %>
-            <div><span class="veg">● </span><%= item.name %> - Prep Time: <%= item.prepTime %> mins</div>
-          <% }) %>
-        <% } else if (type === 'nonveg') { %>
-          <h4>Non-Vegetarian Items:</h4>
-          <% order.items.filter(item => item.type === 'nonveg').forEach(item => { %>
-            <div><span class="nonveg">● </span><%= item.name %> - Prep Time: <%= item.prepTime %> mins</div>
-          <% }) %>
-        <% } %>
-        
-        <!-- Updated form with method override -->
-        <form method="POST" action="/complete-order/<%= order._id %>">
-          <button type="submit" class="complete-btn">Mark as Completed</button>
-        </form>
+  <!-- Dashboard Header -->
+  <header class="dashboard-header animate__animated animate__fadeIn">
+    <div class="container text-center position-relative">
+      <h1 class="restaurant-logo">Sahana Restaurant</h1>
+      <p class="chef-title"><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Dashboard</p>
+      <div class="chef-badge">
+        <i class="fas <%= type === 'veg' ? 'fa-leaf' : 'fa-drumstick-bite' %>"></i>
+        <%= type.charAt(0).toUpperCase() + type.slice(1) %> Kitchen
       </div>
-    <% }) %>
-  <% } else { %>
-    <div class="no-orders">
-      <h3>No pending orders for <%= type %> items.</h3>
-      <p>New orders will appear here automatically when placed.</p>
     </div>
-  <% } %>
+  </header>
   
-  <a href="/chef-login/<%= type %>" class="logout-link">Logout</a>
+  <!-- Kitchen Status Bar -->
+  <div class="kitchen-status animate__animated animate__fadeInDown animate__delay-1s">
+    <div class="container">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        Live Kitchen View
+      </div>
+      <div class="status-time">
+        <i class="far fa-clock me-1"></i>
+        <span id="current-time"></span>
+      </div>
+      <div class="auto-refresh">
+        <i class="fas fa-sync-alt"></i>
+        Auto-refresh in <span id="countdown">30</span>s
+      </div>
+    </div>
+    <div class="refresh-progress"></div>
+  </div>
   
-  <!-- Add auto-refresh script -->
+  <!-- Main Content -->
+  <div class="container dashboard-content">
+    <% if (orders && orders.length > 0) { %>
+      <div class="section-header animate__animated animate__fadeIn animate__delay-1s">
+        <h2 class="section-title">Pending Orders</h2>
+        <span class="orders-count"><%= orders.length %> Order<%= orders.length > 1 ? 's' : '' %></span>
+      </div>
+      
+      <div class="order-grid">
+        <% orders.forEach((order, index) => { %>
+          <div class="order-card hover-card-effect animate__animated animate__fadeInUp" style="animation-delay: <%= 0.3 + (index * 0.15) %>s">
+            <div class="card-header">
+              <h3 class="table-number">
+                <span class="table-icon"><i class="fas fa-utensils"></i></span>
+                Table <%= order.tableNumber %>
+              </h3>
+              <div class="order-time">
+                <i class="far fa-clock"></i>
+                <%= new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <ul class="items-list">
+                <% if (type === 'veg') { %>
+                  <% order.items.filter(item => item.type === 'veg').forEach(item => { %>
+                    <li class="item">
+                      <div class="item-type-indicator"></div>
+                      <div class="item-details">
+                        <h4 class="item-name"><%= item.name %></h4>
+                        <div class="item-prep-time">
+                          <i class="far fa-clock"></i>
+                          Prep Time: <%= item.prepTime %> mins
+                        </div>
+                      </div>
+                    </li>
+                  <% }) %>
+                <% } else if (type === 'nonveg') { %>
+                  <% order.items.filter(item => item.type === 'nonveg').forEach(item => { %>
+                    <li class="item">
+                      <div class="item-type-indicator"></div>
+                      <div class="item-details">
+                        <h4 class="item-name"><%= item.name %></h4>
+                        <div class="item-prep-time">
+                          <i class="far fa-clock"></i>
+                          Prep Time: <%= item.prepTime %> mins
+                        </div>
+                      </div>
+                    </li>
+                  <% }) %>
+                <% } %>
+              </ul>
+            </div>
+            
+            <div class="order-actions">
+              <form method="POST" action="/complete-order/<%= order._id %>">
+                <button type="submit" class="complete-btn" onclick="showCompletionToast('Table <%= order.tableNumber %>')">
+                  <i class="fas fa-check-circle"></i>
+                  Mark as Completed
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="no-orders animate__animated animate__fadeIn animate__delay-1s">
+        <div class="empty-icon">
+          <i class="fas <%= type === 'veg' ? 'fa-leaf' : 'fa-drumstick-bite' %>"></i>
+        </div>
+        <h3>No Pending Orders</h3>
+        <p>Your <%= type %> kitchen is currently clear. New orders will appear here automatically when placed.</p>
+        <div class="kitchen-status-indicator">
+          <div class="chef-type-badge">
+            <i class="fas <%= type === 'veg' ? 'fa-leaf' : 'fa-drumstick-bite' %>"></i>
+            <%= type.charAt(0).toUpperCase() + type.slice(1) %> Kitchen Ready
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <div class="container">
+      <div class="chef-type-badge">
+        <i class="fas <%= type === 'veg' ? 'fa-leaf' : 'fa-drumstick-bite' %>"></i>
+        <%= type.charAt(0).toUpperCase() + type.slice(1) %> Kitchen
+      </div>
+      
+      <p class="copyright">© <%= new Date().getFullYear() %> Sahana Restaurant</p>
+      
+      <a href="/chef-login/<%= type %>" class="logout-link">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </div>
+  </footer>
+  
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
-    // Auto refresh the page every 30 seconds to show new orders
-    setTimeout(function() {
-      window.location.reload();
-    }, 30000);
+    // Update current time every second
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleString();
+    }
+    
+    // Countdown timer for auto-refresh
+    let timeLeft = 30;
+    function updateCountdown() {
+      document.getElementById('countdown').textContent = timeLeft;
+      timeLeft--;
+      
+      if (timeLeft < 0) {
+        window.location.reload();
+      }
+    }
+    
+    // Show completion toast
+    function showCompletionToast(tableNumber) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+          <h3 class="toast-title">Order Completed</h3>
+          <p class="toast-message">${tableNumber} order marked as completed.</p>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+      
+      document.getElementById('toastContainer').appendChild(toast);
+      
+      // Remove toast after 5 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease forwards';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 5000);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateTime();
+      setInterval(updateTime, 1000);
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      
+      // Reset animation when countdown resets
+      setInterval(() => {
+        const progressBar = document.querySelector('.refresh-progress');
+        progressBar.style.animation = 'none';
+        void progressBar.offsetWidth; // Trigger reflow
+        progressBar.style.animation = 'progress 30s linear infinite';
+      }, 30000);
+    });
+    
+    // Animation for orders when they're in viewport
+    document.addEventListener('DOMContentLoaded', function() {
+      const orderCards = document.querySelectorAll('.order-card');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+      
+      orderCards.forEach(card => {
+        observer.observe(card);
+      });
+    });
   </script>
 </body>
 </html>

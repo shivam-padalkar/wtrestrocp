@@ -3,45 +3,607 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login - Sahana Restaurant</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    .home-link {
+    :root {
+      --primary: #7D4C2A;
+      --primary-dark: #5D381F;
+      --secondary: #D4AF37;
+      --secondary-light: #E8CD78;
+      --light: #FAF3E0;
+      --dark: #2C1E10;
+      --white: #FFFFFF;
+      --success: #50A162;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background-color: var(--light);
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Background design with parallax effect */
+    .page-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+    
+    .bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.4);
+      transform: scale(1.05);
+      transition: transform 0.5s ease-out;
+    }
+    
+    body:hover .bg-image {
+      transform: scale(1);
+    }
+    
+    .bg-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Header with animated gradient border */
+    .site-header {
+      position: relative;
+      padding: 1.5rem 0;
+      text-align: center;
+      color: var(--white);
+      margin-bottom: 2rem;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .site-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--secondary) 20%, var(--secondary) 80%, transparent);
+      animation: gradientMove 3s ease infinite;
+    }
+    
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    .site-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--white);
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 0;
+      position: relative;
       display: inline-block;
-      margin: 20px;
-      padding: 10px 15px;
-      background-color: #4CAF50;
-      color: white;
+      padding: 0 1.5rem;
+    }
+    
+    .page-title::before,
+    .page-title::after {
+      content: '✦';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(212, 175, 55, 0.6);
+      font-size: 1rem;
+    }
+    
+    .page-title::before {
+      left: 0;
+    }
+    
+    .page-title::after {
+      right: 0;
+    }
+    
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
       text-decoration: none;
-      border-radius: 4px;
-      font-weight: bold;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
     }
     
     .home-link:hover {
-      background-color: #388E3C;
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--white);
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .home-link i {
+      margin-right: 8px;
+    }
+    
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+    
+    /* Login card with glassmorphism effect */
+    .login-container {
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .login-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 2.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      position: relative;
+      transition: all 0.5s ease;
+      transform: translateY(0);
+    }
+    
+    .login-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .card-glass-shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transition: left 0.6s ease;
+    }
+    
+    .login-card:hover .card-glass-shine {
+      left: 100%;
+    }
+    
+    .card-decoration {
+      position: absolute;
+      z-index: -1;
+      opacity: 0.1;
+      color: var(--white);
+    }
+    
+    .decoration-1 {
+      top: 10%;
+      left: 10%;
+      font-size: 3rem;
+      transform: rotate(-15deg);
+    }
+    
+    .decoration-2 {
+      bottom: 10%;
+      right: 10%;
+      font-size: 2.5rem;
+      transform: rotate(15deg);
+    }
+    
+    .card-title {
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .card-title::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--secondary-light), transparent);
+    }
+    
+    .chef-type-tag {
+      position: absolute;
+      top: 0;
+      right: 20px;
+      transform: translateY(-50%);
+      background: <%= type === 'veg' ? 'linear-gradient(135deg, #50A162, #68C576)' : 'linear-gradient(135deg, #C75D4C, #E77E6C)' %>;
+      color: var(--white);
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-floating {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-floating > label {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+    }
+    
+    .form-control {
+      height: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 1rem;
+      color: var(--white);
+      box-shadow: none !important;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
+    }
+    
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .input-group-text {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+    
+    .password-toggle {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+    
+    .password-toggle:hover {
+      color: var(--secondary);
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: var(--white);
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 1rem;
+      box-shadow: 0 8px 20px rgba(125, 76, 42, 0.3);
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(125, 76, 42, 0.4);
+    }
+    
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      transition: left 0.7s ease;
+    }
+    
+    .login-btn:hover::before {
+      left: 100%;
+    }
+    
+    /* Footer */
+    .site-footer {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .site-title {
+        font-size: 2.2rem;
+      }
+      
+      .page-title {
+        font-size: 1.4rem;
+      }
+      
+      .login-card {
+        padding: 2rem;
+      }
+      
+      .card-title {
+        font-size: 1.6rem;
+      }
+    }
+    
+    /* Floating label adjustments for glassmorphic inputs */
+    .form-floating>.form-control:focus~label,
+    .form-floating>.form-control:not(:placeholder-shown)~label,
+    .form-floating>.form-select~label {
+      opacity: 0.8;
+      transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+      color: var(--secondary);
+      background-color: transparent;
+      height: auto;
+      padding: 0 0.5rem;
+    }
+    
+    /* Custom animations */
+    @keyframes float {
+      0% {
+        transform: translateY(0px) rotate(-15deg);
+      }
+      50% {
+        transform: translateY(-10px) rotate(-15deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(-15deg);
+      }
+    }
+    
+    @keyframes floatReverse {
+      0% {
+        transform: translateY(0px) rotate(15deg);
+      }
+      50% {
+        transform: translateY(-10px) rotate(15deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(15deg);
+      }
+    }
+    
+    .decoration-1 {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .decoration-2 {
+      animation: floatReverse 7s ease-in-out infinite;
+    }
+    
+    /* Pulse animation for chef type tag */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 <%= type === 'veg' ? 'rgba(80, 161, 98, 0.7)' : 'rgba(199, 93, 76, 0.7)' %>;
+      }
+      70% {
+        box-shadow: 0 0 0 10px <%= type === 'veg' ? 'rgba(80, 161, 98, 0)' : 'rgba(199, 93, 76, 0)' %>;
+      }
+      100% {
+        box-shadow: 0 0 0 0 <%= type === 'veg' ? 'rgba(80, 161, 98, 0)' : 'rgba(199, 93, 76, 0)' %>;
+      }
+    }
+    
+    .chef-type-tag {
+      animation: pulse 2s infinite;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login</h1>
-    <a href="/" class="home-link">Back to Home</a>
-  </header>
-  
-  <div class="login-container">
-    <form action="/chef/<%= type %>" method="POST" class="login-form">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      
-      <button type="submit" class="login-btn">Login</button>
-    </form>
+  <!-- Background design -->
+  <div class="page-background">
+    <!-- Choose background image based on chef type -->
+    <div class="bg-image" style="background-image: url('<%= type === 'veg' ? 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' %>')"></div>
+    <div class="bg-pattern"></div>
   </div>
+  
+  <div class="content-wrapper">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1 class="site-title">Sahana Restaurant</h1>
+        <h2 class="page-title"><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Login</h2>
+        <a href="/" class="home-link">
+          <i class="fas fa-home"></i> Back to Home
+        </a>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <div class="login-container">
+          <div class="login-card">
+            <div class="card-glass-shine"></div>
+            <!-- Decorative elements -->
+            <div class="card-decoration decoration-1">
+              <i class="fas <%= type === 'veg' ? 'fa-seedling' : 'fa-drumstick-bite' %>"></i>
+            </div>
+            <div class="card-decoration decoration-2">
+              <i class="fas fa-utensils"></i>
+            </div>
+            
+            <!-- Chef type tag based on veg/nonveg -->
+            <div class="chef-type-tag">
+              <i class="fas <%= type === 'veg' ? 'fa-leaf' : 'fa-drumstick-bite' %>"></i>
+              <%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef
+            </div>
+            
+            <h3 class="card-title">Welcome Back</h3>
+            
+            <form action="/chef/<%= type %>" method="POST">
+              <div class="form-floating position-relative mb-4">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                <div class="input-group-text">
+                  <i class="fas fa-user"></i>
+                </div>
+              </div>
+              
+              <div class="form-floating position-relative mb-4">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                <button type="button" class="password-toggle" onclick="togglePassword()">
+                  <i class="fas fa-eye" id="toggleIcon"></i>
+                </button>
+              </div>
+              
+              <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt me-2"></i> Login
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <%= new Date().getFullYear() %> Sahana Restaurant. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Function to toggle password visibility
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.getElementById('toggleIcon');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+    }
+    
+    // Parallax effect on scroll
+    document.addEventListener('mousemove', function(e) {
+      const bg = document.querySelector('.bg-image');
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      bg.style.transform = `translate(-${x * 15}px, -${y * 15}px) scale(1.05)`;
+    });
+    
+    // Fade in elements on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('loaded');
+    });
+  </script>
 </body>
 </html>

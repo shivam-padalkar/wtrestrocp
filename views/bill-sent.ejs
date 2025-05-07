@@ -1,80 +1,379 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Bill Sent</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Sent - Sahana Restaurant</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      max-width: 800px; 
-      margin: 0 auto; 
-      padding: 20px; 
-      background-color: #f7f7f7;
+    :root {
+      --primary: #7D4C2A;
+      --secondary: #D4AF37;
+      --success: #50A162;
+      --light: #FAF3E0;
+      --dark: #2C1E10;
+      --white: #FFFFFF;
+      --accent: #C75D4C;
     }
-    .success-container { 
-      border: 1px solid #4CAF50; 
-      padding: 25px; 
-      margin: 20px 0; 
-      border-radius: 5px; 
-      background-color: #f1f8e9;
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #FAF3E0 0%, #F5EAD8 100%);
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40vh;
+      background: linear-gradient(135deg, var(--primary) 0%, #8D5C3A 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+      z-index: -1;
+    }
+    
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .restaurant-header {
       text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
     }
+    
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      color: var(--light);
+      margin-bottom: 5px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .tagline {
+      font-size: 1rem;
+      color: var(--light);
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+    
+    .success-card {
+      background-color: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .success-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+      background: linear-gradient(to right, var(--success), #6ABE76);
+      padding: 25px;
+      text-align: center;
+      border: none;
+    }
+    
     .success-icon {
-      color: #4CAF50;
-      font-size: 48px;
-      margin-bottom: 10px;
+      height: 90px;
+      width: 90px;
+      background-color: var(--white);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--success);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      animation: pulse 2s infinite;
     }
-    .back-link {
-      display: inline-block;
-      padding: 10px 15px;
-      background: #2196F3;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      margin-top: 20px;
-      transition: background-color 0.3s;
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(80, 161, 98, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(80, 161, 98, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(80, 161, 98, 0);
+      }
     }
-    .back-link:hover {
-      background-color: #0b7dda;
+    
+    .success-title {
+      color: var(--white);
+      margin-top: 15px;
+      font-weight: 600;
+      font-size: 1.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
+    
+    .card-body {
+      padding: 30px;
+    }
+    
     .bill-details {
-      background-color: white;
-      padding: 15px;
-      border-radius: 5px;
-      margin: 15px 0;
-      text-align: left;
+      background-color: var(--light);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      border-left: 4px solid var(--secondary);
     }
+    
+    .detail-row {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .detail-label {
+      color: var(--dark);
+      font-weight: 500;
+      flex: 0 0 120px;
+    }
+    
+    .detail-value {
+      color: var(--dark);
+      flex-grow: 1;
+      text-align: right;
+      font-weight: 400;
+    }
+    
     .amount {
-      font-size: 24px;
-      color: #4CAF50;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: block;
+      text-align: right;
+      margin-top: 5px;
+      font-family: 'Playfair Display', serif;
     }
-    h1 {
-      color: #4CAF50;
+    
+    .message-sent {
+      text-align: center;
+      color: var(--dark);
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+      position: relative;
+      padding: 0 30px;
     }
+    
+    .message-sent::before, .message-sent::after {
+      content: '';
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--secondary), transparent);
+      width: 40%;
+      top: 50%;
+    }
+    
+    .message-sent::before {
+      left: 0;
+    }
+    
+    .message-sent::after {
+      right: 0;
+    }
+    
     .timestamp {
-      color: #757575;
-      font-size: 14px;
-      margin-top: 20px;
+      color: #999;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .back-link {
+      display: block;
+      padding: 15px 25px;
+      background: linear-gradient(to right, var(--primary), #8D5C3A);
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(125, 76, 42, 0.3);
+    }
+    
+    .back-link:hover {
+      background: linear-gradient(to right, #8D5C3A, var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(125, 76, 42, 0.4);
+      color: var(--white);
+    }
+    
+    .back-link i {
+      margin-right: 8px;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--dark);
+      font-size: 0.85rem;
+    }
+    
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    /* Decorative elements */
+    .decoration {
+      position: absolute;
+      opacity: 0.05;
+      z-index: -1;
+    }
+    
+    .decoration-1 {
+      top: 10%;
+      left: 5%;
+      font-size: 8rem;
+      transform: rotate(-20deg);
+      color: var(--primary);
+    }
+    
+    .decoration-2 {
+      bottom: 10%;
+      right: 5%;
+      font-size: 6rem;
+      transform: rotate(15deg);
+      color: var(--secondary);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .logo-text {
+        font-size: 2rem;
+      }
+      
+      .bill-details {
+        padding: 15px;
+      }
+      
+      .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+      
+      .detail-value {
+        text-align: left;
+        margin-top: 5px;
+      }
+      
+      .amount {
+        text-align: center;
+        margin-top: 15px;
+      }
+      
+      .card-body {
+        padding: 20px;
+      }
+      
+      .decoration {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="success-container">
-    <div class="success-icon">✓</div>
-    <h1>Bill Sent Successfully!</h1>
-    
-    <div class="bill-details">
-      <p><strong>Customer:</strong> <%= customerName %></p>
-      <p><strong>Table Number:</strong> <%= tableNumber %></p>
-      <p><strong>Email:</strong> <%= email %></p>
-      <p>Total Amount: <span class="amount">₹<%= totalAmount.toFixed(2) %></span></p>
+  <!-- Decorative elements -->
+  <div class="decoration decoration-1">
+    <i class="fa-solid fa-utensils"></i>
+  </div>
+  <div class="decoration decoration-2">
+    <i class="fa-solid fa-receipt"></i>
+  </div>
+
+  <div class="page-container">
+    <div class="restaurant-header" data-aos="fade-down" data-aos-duration="1000">
+      <h1 class="logo-text">Sahana Restaurant</h1>
+      <p class="tagline">Exquisite Dining Experience</p>
     </div>
     
-    <p>A copy of the bill has been sent to the customer's email address.</p>
-    <p class="timestamp">Sent on: <%= new Date().toLocaleString() %></p>
+    <div class="success-card" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="200">
+      <div class="card-header">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="success-title">Bill Sent Successfully!</h2>
+      </div>
+      
+      <div class="card-body">
+        <div class="bill-details" data-aos="fade-up" data-aos-duration="600" data-aos-delay="400">
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-user me-2"></i>Customer:</span>
+            <span class="detail-value"><%= customerName %></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-utensils me-2"></i>Table Number:</span>
+            <span class="detail-value"><%= tableNumber %></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-envelope me-2"></i>Email:</span>
+            <span class="detail-value"><%= email %></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-money-bill-wave me-2"></i>Total Amount:</span>
+            <span class="amount">₹<%= totalAmount.toFixed(2) %></span>
+          </div>
+        </div>
+        
+        <p class="message-sent" data-aos="fade-up" data-aos-duration="600" data-aos-delay="600">
+          <i class="fas fa-paper-plane me-2"></i> A copy of the bill has been sent to the customer's email address.
+        </p>
+        
+        <p class="timestamp" data-aos="fade-up" data-aos-duration="600" data-aos-delay="700">
+          <i class="fas fa-clock me-1"></i> Sent on: <%= new Date().toLocaleString() %>
+        </p>
+        
+        <a href="/admin" class="back-link" data-aos="fade-up" data-aos-duration="600" data-aos-delay="800">
+          <i class="fas fa-chevron-left"></i> Back to Admin Dashboard
+        </a>
+      </div>
+    </div>
     
-    <a href="/admin" class="back-link">Back to Admin Dashboard</a>
+    <div class="footer mt-4" data-aos="fade-up" data-aos-duration="600" data-aos-delay="900">
+      <p>© <%= new Date().getFullYear() %> Sahana Restaurant. All rights reserved.</p>
+    </div>
   </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS animations
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init();
+      
+      // Add a confetti effect for celebration
+      setTimeout(() => {
+        const successIcon = document.querySelector('.success-icon');
+        successIcon.classList.add('animate__animated', 'animate__bounce');
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
