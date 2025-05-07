@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= type %> Chef Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
+    .order-card { 
+      border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; 
+      border-radius: 5px; background-color: #f9f9f9; 
+    }
+    .complete-btn {
+      background: #4CAF50; color: white; padding: 10px;
+      border: none; border-radius: 5px; cursor: pointer;
+      margin-top: 15px;
+    }
+    .veg { color: green; }
+    .nonveg { color: red; }
+    .logout-link {
+      display: inline-block; padding: 10px 15px;
+      background: #f44336; color: white;
+      text-decoration: none; border-radius: 5px;
+      margin-top: 20px;
+    }
+    .no-orders { 
+      padding: 30px; background-color: #e9e9e9; 
+      text-align: center; border-radius: 5px;
+    }
+    .order-time {
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1><%= type.charAt(0).toUpperCase() + type.slice(1) %> Chef Dashboard</h1>
+  
+  <% if (orders && orders.length > 0) { %>
+    <h2>Pending Orders</h2>
+    
+    <% orders.forEach(order => { %>
+      <div class="order-card">
+        <h3>Order for Table <%= order.tableNumber %></h3>
+        <p class="order-time">Received: <%= new Date(order.createdAt).toLocaleString() %></p>
+        
+        <% if (type === 'veg') { %>
+          <h4>Vegetarian Items:</h4>
+          <% order.items.filter(item => item.type === 'veg').forEach(item => { %>
+            <div><span class="veg">● </span><%= item.name %> - Prep Time: <%= item.prepTime %> mins</div>
+          <% }) %>
+        <% } else if (type === 'nonveg') { %>
+          <h4>Non-Vegetarian Items:</h4>
+          <% order.items.filter(item => item.type === 'nonveg').forEach(item => { %>
+            <div><span class="nonveg">● </span><%= item.name %> - Prep Time: <%= item.prepTime %> mins</div>
+          <% }) %>
+        <% } %>
+        
+        <!-- Updated form with method override -->
+        <form method="POST" action="/complete-order/<%= order._id %>">
+          <button type="submit" class="complete-btn">Mark as Completed</button>
+        </form>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="no-orders">
+      <h3>No pending orders for <%= type %> items.</h3>
+      <p>New orders will appear here automatically when placed.</p>
+    </div>
+  <% } %>
+  
+  <a href="/chef-login/<%= type %>" class="logout-link">Logout</a>
+  
+  <!-- Add auto-refresh script -->
+  <script>
+    // Auto refresh the page every 30 seconds to show new orders
+    setTimeout(function() {
+      window.location.reload();
+    }, 30000);
+  </script>
+</body>
+</html>

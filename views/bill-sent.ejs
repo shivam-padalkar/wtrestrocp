@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bill Sent</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px; 
+      background-color: #f7f7f7;
+    }
+    .success-container { 
+      border: 1px solid #4CAF50; 
+      padding: 25px; 
+      margin: 20px 0; 
+      border-radius: 5px; 
+      background-color: #f1f8e9;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .success-icon {
+      color: #4CAF50;
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .back-link {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #2196F3;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    .back-link:hover {
+      background-color: #0b7dda;
+    }
+    .bill-details {
+      background-color: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      text-align: left;
+    }
+    .amount {
+      font-size: 24px;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    .timestamp {
+      color: #757575;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1>Bill Sent Successfully!</h1>
+    
+    <div class="bill-details">
+      <p><strong>Customer:</strong> <%= customerName %></p>
+      <p><strong>Table Number:</strong> <%= tableNumber %></p>
+      <p><strong>Email:</strong> <%= email %></p>
+      <p>Total Amount: <span class="amount">₹<%= totalAmount.toFixed(2) %></span></p>
+    </div>
+    
+    <p>A copy of the bill has been sent to the customer's email address.</p>
+    <p class="timestamp">Sent on: <%= new Date().toLocaleString() %></p>
+    
+    <a href="/admin" class="back-link">Back to Admin Dashboard</a>
+  </div>
+</body>
+</html>

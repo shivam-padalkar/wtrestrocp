@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Orders</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .order-card { 
+      border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; 
+      border-radius: 5px; background-color: #f9f9f9; 
+    }
+    .back-link {
+      display: inline-block; padding: 10px 15px;
+      background: #2196F3; color: white;
+      text-decoration: none; border-radius: 5px;
+      margin: 20px 0;
+    }
+    .order-time {
+      color: #666;
+      font-size: 14px;
+    }
+    .status-pending { color: orange; }
+    .status-completed { color: green; }
+    .veg { color: green; }
+    .nonveg { color: red; }
+    .filter-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #eee;
+      border-radius: 5px;
+    }
+    .filter-group label {
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>All Orders</h1>
+  
+  <div class="filter-group">
+    <label>
+      <input type="radio" name="status-filter" value="all" checked> All
+    </label>
+    <label>
+      <input type="radio" name="status-filter" value="Pending"> Pending
+    </label>
+    <label>
+      <input type="radio" name="status-filter" value="Completed"> Completed
+    </label>
+  </div>
+  
+  <% if (orders && orders.length > 0) { %>
+    <% orders.forEach(order => { %>
+      <div class="order-card" data-status="<%= order.status %>">
+        <h3>Order for Table <%= order.tableNumber %></h3>
+        <p class="order-time">Time: <%= new Date(order.createdAt).toLocaleString() %></p>
+        <p>Status: <span class="status-<%= order.status.toLowerCase() %>"><%= order.status %></span></p>
+        <p>Email: <%= order.email %></p>
+        
+        <h4>Items:</h4>
+        <% order.items.forEach(item => { %>
+          <div>
+            <span class="<%= item.type %>">● </span>
+            <%= item.name %> - ₹<%= item.price %>
+          </div>
+        <% }) %>
+        
+        <p><strong>Total:</strong> ₹<%= order.items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) %></p>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p>No orders found.</p>
+  <% } %>
+  
+  <a href="/admin" class="back-link">Back to Admin Dashboard</a>
+  
+  <script>
+    // Simple client-side filtering
+    document.querySelectorAll('input[name="status-filter"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const value = this.value;
+        document.querySelectorAll('.order-card').forEach(card => {
+          if (value === 'all' || card.dataset.status === value) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

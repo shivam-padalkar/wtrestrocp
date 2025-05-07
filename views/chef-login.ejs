@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title><%= type %> Chef Login</title></head>
+<body>
+  <h1><%= type %> Chef Login</h1>
+  <form action="/chef/<%= type %>" method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>

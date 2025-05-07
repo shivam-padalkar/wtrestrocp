@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Confirmation</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .success { color: #4CAF50; }
+    .order-details { border: 1px solid #ddd; padding: 15px; margin: 20px 0; border-radius: 5px; }
+    .menu-link { 
+      display: inline-block; margin: 20px 0; padding: 10px; 
+      background: #2196F3; color: white; text-decoration: none; border-radius: 5px; 
+    }
+  </style>
+</head>
+<body>
+  <h1 class="success">Order Placed Successfully!</h1>
+  
+  <div class="order-details">
+    <h2>Order Details</h2>
+    <p><strong>Order ID:</strong> <%= order._id %></p>
+    <p><strong>Table Number:</strong> <%= order.tableNumber %></p>
+    <p><strong>Email:</strong> <%= order.email %></p>
+    
+    <h3>Items Ordered:</h3>
+    <ul>
+      <% order.items.forEach(item => { %>
+        <li><%= item.name %> - ₹<%= item.price %></li>
+      <% }) %>
+    </ul>
+    
+    <p><strong>Total:</strong> ₹<%= order.items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) %></p>
+  </div>
+  
+  <p>Your order has been sent to the kitchen. You'll receive your bill by email once your order is complete.</p>
+  
+  <a href="/" class="menu-link">Return to Menu</a>
+</body>
+</html>
