@@ -35,7 +35,10 @@ app.use(session({
 app.get('/', async (req, res) => {
   try {
     const items = await Item.find({});
-    res.render('menu', { items });
+    res.render('menu', { 
+      items, 
+      showLoginButtons: true // Adding flag to show login buttons on home screen
+    });
   } catch (error) {
     console.error('Error fetching menu items:', error);
     res.status(500).render('error', { 
@@ -72,13 +75,17 @@ app.get('/cart', (req, res) => {
 });
 
 // Order placement
+// Order placement
+// Order placement (simplified version without schema changes)
+// Order placement (simplified version without schema changes)
+// Order placement
 app.post('/place-order', async (req, res) => {
   try {
     const { tableNumber, email } = req.body;
-    const items = req.session.cart || [];
+    const cartItems = req.session.cart || [];
     
     // Make sure we have items in the cart
-    if (items.length === 0) {
+    if (cartItems.length === 0) {
       return res.status(400).render('error', {
         message: 'Your cart is empty. Please add items before placing an order.',
         backLink: '/',
@@ -87,7 +94,7 @@ app.post('/place-order', async (req, res) => {
     }
 
     // Convert string values to numbers for price and prepTime if needed
-    const processedItems = items.map(item => ({
+    const processedItems = cartItems.map(item => ({
       name: item.name,
       type: item.type,
       price: parseFloat(item.price),
@@ -105,14 +112,17 @@ app.post('/place-order', async (req, res) => {
       chefType = 'nonveg';
     }
 
-    // Create the order with properly formatted items
-    const newOrder = await Order.create({
+    // Create a new order
+    const orderData = {
       items: processedItems,
       tableNumber: parseInt(tableNumber),
       email,
       chefType,
-      status: 'Pending'
-    });
+      status: 'Pending',
+      billSent: false
+    };
+
+    const newOrder = await Order.create(orderData);
 
     // Send confirmation email
     try {
@@ -137,7 +147,7 @@ app.post('/place-order', async (req, res) => {
 
     // Clear the cart
     req.session.cart = [];
-    res.render('order-confirmation', { order: newOrder });
+    res.render('order-confirmation', { order: newOrder, showLoginButtons: false });
   } catch (error) {
     console.error('Error placing order:', error);
     res.status(500).render('error', {
@@ -192,6 +202,13 @@ app.post('/chef/:type', async (req, res) => {
       });
     }
 
+    // Store user session information
+    req.session.user = {
+      username: user.username,
+      role: user.role,
+      type: type
+    };
+
     // Find relevant orders for this chef type
     let orders;
     
@@ -215,11 +232,66 @@ app.post('/chef/:type', async (req, res) => {
       }).sort({ createdAt: 1 }); // oldest first
     }
     
-    res.render('chef', { orders, type });
+    res.render('chef', { orders, type, showLoginButtons: false });
   } catch (error) {
     console.error('Chef login error:', error);
     res.status(500).render('error', { 
       message: `Error processing login: ${error.message}`,
+      backLink: '/',
+      backText: 'Home'
+    });
+  }
+});
+
+// Add GET routes for chef dashboards - FIX for the error when completing orders
+app.get('/chef/veg', async (req, res) => {
+  try {
+    // Check if user is logged in as a veg chef
+    if (!req.session.user || req.session.user.role !== 'veg-chef') {
+      return res.redirect('/chef-login/veg');
+    }
+
+    // Find relevant orders for veg chef
+    const orders = await Order.find({
+      $or: [
+        { chefType: 'veg' },
+        { chefType: 'both' }
+      ],
+      status: 'Pending'
+    }).sort({ createdAt: 1 }); // oldest first
+    
+    res.render('chef', { orders, type: 'veg', showLoginButtons: false });
+  } catch (error) {
+    console.error('Error loading veg chef dashboard:', error);
+    res.status(500).render('error', { 
+      message: `Error loading chef dashboard: ${error.message}`,
+      backLink: '/',
+      backText: 'Home'
+    });
+  }
+});
+
+app.get('/chef/nonveg', async (req, res) => {
+  try {
+    // Check if user is logged in as a nonveg chef
+    if (!req.session.user || req.session.user.role !== 'nonveg-chef') {
+      return res.redirect('/chef-login/nonveg');
+    }
+
+    // Find relevant orders for non-veg chef
+    const orders = await Order.find({
+      $or: [
+        { chefType: 'nonveg' },
+        { chefType: 'both' }
+      ],
+      status: 'Pending'
+    }).sort({ createdAt: 1 }); // oldest first
+    
+    res.render('chef', { orders, type: 'nonveg', showLoginButtons: false });
+  } catch (error) {
+    console.error('Error loading nonveg chef dashboard:', error);
+    res.status(500).render('error', { 
+      message: `Error loading chef dashboard: ${error.message}`,
       backLink: '/',
       backText: 'Home'
     });
@@ -269,7 +341,13 @@ app.post('/admin', async (req, res) => {
       });
     }
     
-    res.render('admin');
+    // Store admin session information
+    req.session.user = {
+      username: user.username,
+      role: user.role
+    };
+    
+    res.render('admin', { showLoginButtons: false });
   } catch (error) {
     console.error('Admin login error:', error);
     res.status(500).render('error', {
@@ -280,12 +358,26 @@ app.post('/admin', async (req, res) => {
   }
 });
 
+// Admin dashboard GET route
+app.get('/admin', (req, res) => {
+  // Check if user is logged in as admin
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.redirect('/admin-login');
+  }
+  res.render('admin', { showLoginButtons: false });
+});
+
 // Admin orders view
 app.get('/admin/orders', async (req, res) => {
   try {
+    // Check if user is logged in as admin
+    if (!req.session.user || req.session.user.role !== 'admin') {
+      return res.redirect('/admin-login');
+    }
+    
     // Get all orders sorted by most recent first
     const orders = await Order.find().sort({ createdAt: -1 });
-    res.render('admin-orders', { orders });
+    res.render('admin-orders', { orders, showLoginButtons: false });
   } catch (error) {
     console.error('Error getting orders:', error);
     res.status(500).render('error', {
@@ -296,22 +388,22 @@ app.get('/admin/orders', async (req, res) => {
   }
 });
 
-// Bill sending
+// Bill sending - UPDATED to only include orders that haven't been billed yet
+// Bill sending - UPDATED to only include orders that haven't been billed yet
 app.post('/send-bill', async (req, res) => {
   try {
     const { tableNumber, customerName, email } = req.body;
     
-    // Find orders for this table with Completed status
+    // Find completed orders for this table that haven't been billed yet
     const orders = await Order.find({ 
       tableNumber: parseInt(tableNumber), 
       status: 'Completed',
-      // Optional: Only consider orders from the last 24 hours
-      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+      email: email // Match the email to ensure we're only getting orders for the right customer
     });
     
     if (!orders || orders.length === 0) {
       return res.render('error', {
-        message: 'No completed orders found for this table.',
+        message: 'No completed orders found for this table and email.',
         backLink: '/admin',
         backText: 'Back to Admin Dashboard'
       });
@@ -320,13 +412,31 @@ app.post('/send-bill', async (req, res) => {
     // Calculate total bill amount
     let totalAmount = 0;
     let itemList = [];
+    let billableOrders = [];
     
+    // Process each order
     orders.forEach(order => {
-      order.items.forEach(item => {
-        totalAmount += parseFloat(item.price);
-        itemList.push(`${item.name} - ₹${item.price}`);
-      });
+      // Check if order has items array and it's not empty
+      if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+        // Only include orders that haven't been billed yet
+        if (order.billSent !== true) {
+          billableOrders.push(order);
+          order.items.forEach(item => {
+            totalAmount += parseFloat(item.price || 0);
+            itemList.push(`${item.name || 'Unknown Item'} - ₹${(item.price || 0).toFixed(2)}`);
+          });
+        }
+      }
     });
+    
+    // If no billable orders found
+    if (billableOrders.length === 0) {
+      return res.render('error', {
+        message: 'All completed orders for this table and email have already been billed.',
+        backLink: '/admin',
+        backText: 'Back to Admin Dashboard'
+      });
+    }
     
     // Create bill HTML
     const billHtml = `
@@ -355,7 +465,9 @@ app.post('/send-bill', async (req, res) => {
             <th>Price</th>
           </tr>
           ${itemList.map(item => {
-            const [name, price] = item.split(' - ');
+            const parts = item.split(' - ');
+            const name = parts[0] || 'Unknown Item';
+            const price = parts[1] || '₹0.00';
             return `<tr><td>${name}</td><td>${price}</td></tr>`;
           }).join('')}
         </table>
@@ -386,7 +498,18 @@ app.post('/send-bill', async (req, res) => {
         html: billHtml
       });
       
-      res.render('bill-sent', { customerName, email, tableNumber, totalAmount });
+      // Mark orders as billed
+      for (const order of billableOrders) {
+        await Order.findByIdAndUpdate(order._id, { billSent: true });
+      }
+      
+      res.render('bill-sent', { 
+        customerName, 
+        email, 
+        tableNumber, 
+        totalAmount,
+        showLoginButtons: false
+      });
     } catch (emailError) {
       console.error('Error sending email:', emailError);
       res.render('error', {
@@ -416,7 +539,7 @@ app.get('/order-confirmation/:id', async (req, res) => {
         backText: 'Home'
       });
     }
-    res.render('order-confirmation', { order });
+    res.render('order-confirmation', { order, showLoginButtons: false });
   } catch (error) {
     console.error('Error retrieving order:', error);
     res.status(500).render('error', {
