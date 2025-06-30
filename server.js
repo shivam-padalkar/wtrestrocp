@@ -132,7 +132,7 @@ app.post('/place-order', async (req, res) => {
         service: 'gmail',
         auth: {
           user: 'qwertyisop91@gmail.com', // replace with your Gmail
-          pass: 'ijsa exre kvfa oqjs' // use env vars or OAuth2 in real apps
+          pass:  // use env vars or OAuth2 in real apps
         }
       });
 
@@ -476,7 +476,7 @@ app.post('/send-bill', async (req, res) => {
         service: 'gmail',
         auth: {
           user: 'qwertyisop91@gmail.com', // replace with your Gmail
-          pass: 'ijsa exre kvfa oqjs' // use env vars or OAuth2 in real apps
+          pass:  // use env vars or OAuth2 in real apps
         }
       });
       
